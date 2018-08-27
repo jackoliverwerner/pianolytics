@@ -33,6 +33,32 @@ transpose_notes <- function(note, halfsteps, up = TRUE) {
   return(newnote)
 }
 
+# Transpose a key up or down a number of half steps (includes octave #)
+transpose_keys <- function(key, halfsteps, up = TRUE) {
+  notes <- c("C", "C#/Db", "D", "D#/Eb", "E", "F",
+             "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B")
+  
+  note <- gsub("[0-9]+", "", key)
+  octave_num <- gsub("[A-Z]", "", key) %>% as.numeric()
+  
+  octaves <- floor(halfsteps/12)
+  
+  leftover <- halfsteps %% 12
+  
+  if (up) carryover <- (which(notes == note) + leftover) > 12
+  else carryover <- (which(notes == note) - leftover) < 1
+  
+  octave_change <- (octaves + carryover)
+  if (!up) octave_change <- -1*octave_change
+  
+  newkey <- paste0(
+    transpose_notes(note = note, halfsteps = halfsteps, up = up),
+    octave_num + octave_change
+  )
+  
+  return(newkey)
+}
+
 # Data frame of all (or only some) scales
 get_scale_df <- function(num_notes = NA, max_interval = NA, interval_limits = NA, starting_note = "C") {
   notes <- c("C", "C#/Db", "D", "D#/Eb", "E", "F", 
@@ -351,7 +377,8 @@ keyboard_color_plot <- function(colored_keys = c("C1", "D1", "G1", "B1"),
                                 lowkey = "C1", highkey = "C2",
                                 low_color = "white", high_color = "red",
                                 white_key_height = 150, white_key_width = 23.5,
-                                black_key_height = 90, black_key_width = 13.7) {
+                                black_key_height = 90, black_key_width = 13.7,
+                                background_color = "white") {
   keys <- keyboard_df(lowkey = lowkey, highkey = highkey,
                       white_key_height = white_key_height, white_key_width = white_key_width,
                       black_key_height = black_key_height, black_key_width = black_key_width)
@@ -385,7 +412,10 @@ keyboard_color_plot <- function(colored_keys = c("C1", "D1", "G1", "B1"),
       coord_fixed() +
       scale_fill_gradient(low = low_color, high = high_color) +
       theme_void() +
-      theme(legend.position = "none")
+      theme(legend.position = "none",
+            plot.background = element_rect(fill = background_color),
+            panel.background = element_rect(fill = background_color)
+            )
   )
   
   return(out)

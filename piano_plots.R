@@ -1,9 +1,9 @@
 library(tidyverse)
 
-source("C:/Users/jack.werner1/Documents/Music/src/music_functions.R")
+#setwd("C:/Users/jack.werner1/Documents/Music/src")
+setwd("/Users/jackwerner/Documents/My Stuff/Music/pianolytics")
 
-setwd("C:/Users/jack.werner1/Documents/Music/src")
-
+source("music_functions.R")
 
 
 # Mary Had a Little Lamb
@@ -12,6 +12,8 @@ note_vec <- strsplit(note_string, "")[[1]]
 note_df <- table(note_vec) %>% data.frame()
 
 keyboard_color_plot(note_df$note_vec, note_df$Freq, highkey = "B1")
+
+
 
 
 # Danny Boy
@@ -27,9 +29,11 @@ octave_string <- c("122222222221222222222212222222222112222222222223222222222223
 octave_vec <- num_vec <- strsplit(octave_string, "")[[1]]
 
 key_vec <- paste0(note_vec, octave_vec)
+key_vec <- sapply(key_vec, transpose_keys, halfsteps = 2)
 key_df <- table(key_vec) %>% data.frame()
 
-keyboard_color_plot(key_df$key_vec, key_df$Freq, lowkey = "C1", highkey = "C4")
+keyboard_color_plot(key_df$key_vec, key_df$Freq, lowkey = "A1", highkey = "A3")
 
+# Star Spangled Banner
 
 
